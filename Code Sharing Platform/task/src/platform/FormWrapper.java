@@ -2,7 +2,7 @@ package platform;
 
 public class FormWrapper {
 
-    public static String getForm() {
+    public static String getFormForInputCodeFragments() {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
@@ -32,5 +32,17 @@ public class FormWrapper {
                 "    <button id=\"send_snippet\" type=\"submit\" onclick=\"send()\">Submit</button>\n" +
                 "</body>\n" +
                 "</html>";
+    }
+
+    public static String getFormForSeveralCodeFragments(int amountOfCodeFragments, String title) {
+        return "<html>\n" +
+                "    <head><title>" + title + "</title></head>\n" +
+                "    <body>\n" +
+                ("<span>%s</span>\n" +
+                        "<pre id=\"code_snippet\">\n" +
+                        "%s\n" +
+                        "</pre>\n").repeat(Math.max(0, amountOfCodeFragments)) +
+                "   </body>\n" +
+                "   </html>";
     }
 }

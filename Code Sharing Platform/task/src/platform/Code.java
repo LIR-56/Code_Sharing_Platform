@@ -18,19 +18,27 @@ public class Code {
             "}";
 
     private final String code;
-    private final LocalDateTime createDateTime;
+    private final LocalDateTime date;
 
 
     Code(String code, LocalDateTime createDateTime) {
         this.code = code;
-        this.createDateTime = createDateTime;
+        this.date = createDateTime;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public String asJson() {
-        return String.format(JSON_TEMPLATE, code, createDateTime);
+        return String.format(JSON_TEMPLATE, code, date);
     }
 
     public String asHtml() {
-        return String.format(HTML_TEMPLATE, HtmlUtils.htmlEscape(code), createDateTime);
+        return String.format(HTML_TEMPLATE, HtmlUtils.htmlEscape(code), date);
     }
 }
