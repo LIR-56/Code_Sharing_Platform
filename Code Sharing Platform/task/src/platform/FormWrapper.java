@@ -40,7 +40,9 @@ public class FormWrapper {
                 "    <body>\n" +
                 ("<span>%s</span>\n" +
                         "<pre id=\"code_snippet\">\n" +
+                        "<code>" +
                         "%s\n" +
+                        "</code>\n" +
                         "</pre>\n").repeat(Math.max(0, amountOfCodeFragments)) +
                 "   </body>\n" +
                 "   </html>";
