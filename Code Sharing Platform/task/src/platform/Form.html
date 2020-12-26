@@ -6,7 +6,9 @@
     <script type="">
         function send() {
             let object = {
-                "code": document.getElementById("code_snippet").value
+                "code": document.getElementById("code_snippet").value,
+                "time": document.getElementById("time_restriction").value,
+                "views": document.getElementById("views_restriction").value
             };
 
             let json = JSON.stringify(object);
@@ -23,6 +25,8 @@
     </script>
 </head>
 <body>
+    <input id="time_restriction" type="text" placeholder="Seconds amount until expiring"/>
+    <input id="views_restriction" type="text" placeholder="Views amount until expiring"/>
     <textarea id="code_snippet" placeholder="//write your code here"></textarea>
     <button id="send_snippet" type="submit" onclick="send()">Submit</button>
 </body>

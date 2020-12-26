@@ -2,10 +2,10 @@ package platform;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.UUID;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -13,39 +13,32 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.util.HtmlUtils;
 
+import static platform.FormWrapper.getTemplateForCode;
+
 @Entity
 public class Code {
 
     private static final String pattern = "yyyy/MM/dd hh:mm:ss";
     public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
-    private static final String HTML_TEMPLATE = "<html>\n" +
-            "    <head>" +
-            "<link rel=\"stylesheet\"\n" +
-            "       target=\"_blank\" href=\"//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2" +
-            ".1/build/styles/default.min.css\">\n" +
-            "<script src=\"//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/highlight.min.js\"></script>\n" +
-            "<script>hljs.initHighlightingOnLoad();</script>\n" +
-            "<title>Code</title></head>\n" +
-            "    <body><pre id=\"code_snippet\">\n" +
-            "<code>\n" +
-            "%s\n" +
-            "</code>\n" +
-            "</pre>\n</body>\n" +
-            "<span id=\"load_date\">%s</span>\n" +
-            "</html>";
-    private static final String JSON_TEMPLATE = "{\n" +
-            "    \"code\": \"%s\",\n" +
-            "    \"date\": \"%s\"\n" +
-            "}";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
-    private long id;
+    private UUID id = UUID.randomUUID();
+
     private String code;
+
     @DateTimeFormat(pattern = pattern)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = pattern)
     private LocalDateTime date;
+
+    private long time;
+
+    private long views;
+
+    @javax.persistence.Transient
+    @JsonIgnore
+    private boolean showZeroViewsAsLimitations = false;
+
 
     public Code() {
     }
@@ -53,6 +46,33 @@ public class Code {
     Code(String code, LocalDateTime date) {
         this.code = code;
         this.date = date;
+    }
+
+    public Code(String code, LocalDateTime date, long time, long views) {
+        this.code = code;
+        this.date = date;
+        this.time = time;
+        this.views = views;
+    }
+
+    public void setShowZeroViewsAsLimitations(boolean showZeroViewsAsLimitations) {
+        this.showZeroViewsAsLimitations = showZeroViewsAsLimitations;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public long getViews() {
+        return views;
+    }
+
+    public void setViews(long views) {
+        this.views = views;
     }
 
     public LocalDateTime getDate() {
@@ -63,19 +83,23 @@ public class Code {
         return code;
     }
 
-    public String asJson() {
-        return String.format(JSON_TEMPLATE, code, date.format(dtf));
-    }
-
     public String asHtml() {
-        return String.format(HTML_TEMPLATE, HtmlUtils.htmlEscape(code), date.format(dtf));
+        var params = new LinkedList<>();
+        params.add(HtmlUtils.htmlEscape(code));
+        params.add(date.format(dtf));
+        var showViews = views > 0 || (showZeroViewsAsLimitations && views == 0);
+        if (time > 0) params.add(time);
+        if (showViews) params.add(views);
+
+        return String.format(getTemplateForCode(time > 0, showViews),
+                params.toArray());
     }
 
-    public long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
